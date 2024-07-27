@@ -1,9 +1,7 @@
-const getResource = async (url) => {
-  const res = await fetch(url).json
-  const body = await res.json
-  return body
-}
+import ReactDOM from 'react-dom/client'
+import './index.css'
 
-getResource('https://api.themoviedb.org/3/search/movie?include_adult=false&language=en-US&page=1').then((body) => {
-  console.log(body)
-})
+import App from './components/app'
+
+const root = ReactDOM.createRoot(document.getElementById('root'))
+root.render(<App />)

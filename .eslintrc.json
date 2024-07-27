@@ -29,7 +29,7 @@
   "plugins": ["react", "prettier", "import", "react-hooks", "jsx-a11y"],
   "rules": {
     "indent": ["error", 2],
-    "prettier/prettier": "error",
+    "prettier/prettier": ["error", { "endOfLine": "lf" }],
     "linebreak-style": [0, "unix"],
     "quotes": ["error", "single"],
     "semi": ["error", "never"],
