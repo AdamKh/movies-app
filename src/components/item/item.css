@@ -1,0 +1,26 @@
+.movie_title {
+  font-size: 20px !important;
+}
+
+.movie_date {
+  color: #827e7e;
+  margin-top: 7px;
+  margin-bottom: 0;
+}
+
+.movie_genres {
+  display: flex;
+}
+
+.genre {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid #d9d9d9;
+  border-radius: 2px;
+  background: #fafafa;
+  color: #585858;
+  padding: 2px 5px;
+  margin-right: 8px;
+  margin-top: 7px;
+}

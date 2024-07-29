@@ -11,9 +11,9 @@
     "plugin:jsx-a11y/recommended",
     "plugin:import/recommended",
     "plugin:prettier/recommended",
-    "prettier",
     "airbnb",
-    "airbnb/hooks"
+    "airbnb/hooks",
+    "prettier"
   ],
   "parser": "@babel/eslint-parser",
   "parserOptions": {
@@ -29,7 +29,9 @@
   "plugins": ["react", "prettier", "import", "react-hooks", "jsx-a11y"],
   "rules": {
     "indent": ["error", 2],
+    "object-curly-newline": ["off"],
     "prettier/prettier": ["error", { "endOfLine": "lf" }],
+    "max-len": ["error", { "code": 120 }],
     "linebreak-style": [0, "unix"],
     "quotes": ["error", "single"],
     "semi": ["error", "never"],
