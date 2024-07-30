@@ -41,10 +41,9 @@ export default function App() {
     const movieService = new MoviesService()
     setLoading(false)
     movieService
-      .getMovies(query)
-      .then((res) => res.results.slice(6 * pagValue - 6, 6 * pagValue))
+      .getMovies(query, pagValue)
       .then((res) => {
-        const items = res.map((movie) => ({
+        const items = res.results.map((movie) => ({
           id: movie.id,
           title: movie.title,
           text: shortenText(movie.overview, 150),

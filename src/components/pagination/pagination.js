@@ -8,8 +8,9 @@ export default function Pagination({ setPagValue }) {
       className="pagination"
       align="center"
       defaultCurrent={1}
-      total={20}
-      pageSize={6}
+      showSizeChanger={false}
+      total={500}
+      pageSize={20}
       onChange={(page) => setPagValue(page)}
     />
   )

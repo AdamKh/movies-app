@@ -3,12 +3,12 @@ export default class MoviesService {
 
   #apiImageBase = 'https://image.tmdb.org/t/p/w500'
 
-  // #apiKey = '17f5f189e6a1521e9371c3f365ec176b'
+  #apiKey = '337934fa813395f35e1609d76c5d91ae'
 
   // eslint-disable-next-line operator-linebreak
   #token =
     // eslint-disable-next-line max-len
-    'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIzMzc5MzRmYTgxMzM5NWYzNWUxNjA5ZDc2YzVkOTFhZSIsIm5iZiI6MTcyMjAwMjYzMi45ODA2NTIsInN1YiI6IjY2YTEzNjYzYTlmOGZhNTkzZjUyOWY3NCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.ujUVTz1cBm_tFQRSSVmoMr8MhYDzfqY1ISYQSidhKa0'
+    'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIzMzc5MzRmYTgxMzM5NWYzNWUxNjA5ZDc2YzVkOTFhZSIsIm5iZiI6MTcyMjM2OTIxMi42NzM5ODksInN1YiI6IjY2YTEzNjYzYTlmOGZhNTkzZjUyOWY3NCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.PCY2pq97aWb-PyzRNsWi0CXI2b9q8RR-pqv1XHObjzQ'
 
   #options = {
     method: 'GET',
@@ -26,8 +26,10 @@ export default class MoviesService {
     return res.json()
   }
 
-  getMovies(query) {
-    return this.getResource(`/3/search/movie?include_adult=false&language=en-US&page=1&query=${query}`)
+  getMovies(query, page) {
+    return this.getResource(
+      `/3/search/movie?include_adult=false&language=en-US&page=${page}&query=${query}&api_key=${this.#apiKey}`
+    )
   }
 
   getImage(posterPath) {
