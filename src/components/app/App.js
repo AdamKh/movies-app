@@ -28,20 +28,21 @@ function shortenText(text, maxLength) {
 
 export default function App() {
   const [moviesList, setMoviesList] = useState([])
-  const [isLoaded, setLoad] = useState(false)
+  const [isLoaded, setLoading] = useState(false)
   const [error, setError] = useState({
     isError: false,
     errorMessage: null,
     errorDescription: null,
   })
   const [query, setQuery] = useState('return')
+  const [pagValue, setPagValue] = useState(1)
 
   useEffect(() => {
     const movieService = new MoviesService()
-    setLoad(false)
+    setLoading(false)
     movieService
       .getMovies(query)
-      .then((res) => res.results.slice(0, 6))
+      .then((res) => res.results.slice(6 * pagValue - 6, 6 * pagValue))
       .then((res) => {
         const items = res.map((movie) => ({
           id: movie.id,
@@ -51,17 +52,17 @@ export default function App() {
           releaseData: movie.release_date,
         }))
         setMoviesList(items)
-        setLoad(true)
+        setLoading(true)
       })
       .catch((err) => {
-        setLoad(true)
+        setLoading(true)
         setError({
           isError: true,
           errorMessage: err.name,
           errorDescription: err.message,
         })
       })
-  }, [query])
+  }, [query, pagValue])
 
   return (
     <div className="section">
@@ -86,7 +87,7 @@ export default function App() {
       <Offline>
         <ErrorHandler errorMessage="Проверьте подключение к сети" errorDescription="Ноу интернет коннектион" />
       </Offline>
-      <Pagination />
+      <Pagination setPagValue={setPagValue} />
     </div>
   )
 }

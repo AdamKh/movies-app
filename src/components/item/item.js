@@ -15,6 +15,13 @@ function image(imageUrl) {
   )
 }
 
+function formatDate(releaseData) {
+  if (releaseData) {
+    return format(new Date(releaseData), 'MMMM dd, yyyy')
+  }
+  return 'Дата релиза неизвестна'
+}
+
 export default function Item({ title, text, imageUrl, releaseData }) {
   return (
     <Col span={12}>
@@ -24,7 +31,7 @@ export default function Item({ title, text, imageUrl, releaseData }) {
           <Title level={3} className="movie_title">
             {title}
           </Title>
-          <p className="movie_date">{format(new Date(releaseData), 'MMMM dd, yyyy')}</p>
+          <p className="movie_date">{formatDate(releaseData)}</p>
           <div className="movie_genres">
             <p className="genre">Action</p>
             <p className="genre">Drama</p>
