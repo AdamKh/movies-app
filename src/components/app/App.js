@@ -1,13 +1,13 @@
 import './app.css'
-// eslint-disable-next-line import/order
+
 import { useState, useEffect } from 'react'
 import { Offline, Online } from 'react-detect-offline'
-import { Alert } from 'antd'
 
 import ItemList from '../item-list'
 import MoviesService from '../../services/movies-services'
 import Spinner from '../spinner'
-import ErrorHandler from '../error'
+import ErrorHandler from '../error/error-handler'
+import EmptyQuery from '../error/empty-query'
 import SearchBar from '../searchbar'
 import Pagination from '../pagination'
 
@@ -28,17 +28,19 @@ function shortenText(text, maxLength) {
 
 export default function App() {
   const [moviesList, setMoviesList] = useState([])
-  const [load, setLoad] = useState(false)
+  const [isLoaded, setLoad] = useState(false)
   const [error, setError] = useState({
     isError: false,
     errorMessage: null,
     errorDescription: null,
   })
+  const [query, setQuery] = useState('return')
 
   useEffect(() => {
     const movieService = new MoviesService()
+    setLoad(false)
     movieService
-      .getMovies()
+      .getMovies(query)
       .then((res) => res.results.slice(0, 6))
       .then((res) => {
         const items = res.map((movie) => ({
@@ -59,18 +61,30 @@ export default function App() {
           errorDescription: err.message,
         })
       })
-  }, [])
+  }, [query])
 
   return (
     <div className="section">
-      <SearchBar />
+      <SearchBar setQuery={setQuery} />
       <Online>
-        {error.isError && <ErrorHandler errorMessage={error.errorMessage} errorDescription={error.errorDescription} />}
-        {!load && <Spinner />}
-        <ItemList itemsList={moviesList} />
+        {(() => {
+          if (!isLoaded) {
+            return <Spinner />
+          }
+
+          if (error.isError) {
+            return <ErrorHandler errorMessage={error.errorMessage} errorDescription={error.errorDescription} />
+          }
+
+          if (moviesList.length === 0) {
+            return <EmptyQuery errorDescription="Фильмы с таким названием не найдены" />
+          }
+
+          return <ItemList itemsList={moviesList} />
+        })()}
       </Online>
       <Offline>
-        <Alert type="error" message="Проверьте подключение к сети" description="Ноу интернет коннектион" />
+        <ErrorHandler errorMessage="Проверьте подключение к сети" errorDescription="Ноу интернет коннектион" />
       </Offline>
       <Pagination />
     </div>

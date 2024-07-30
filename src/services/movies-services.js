@@ -26,8 +26,8 @@ export default class MoviesService {
     return res.json()
   }
 
-  getMovies() {
-    return this.getResource('/3/search/movie?include_adult=false&language=en-US&page=1&query=return')
+  getMovies(query) {
+    return this.getResource(`/3/search/movie?include_adult=false&language=en-US&page=1&query=${query}`)
   }
 
   getImage(posterPath) {
