@@ -8,6 +8,8 @@ import ItemList from '../item-list'
 import MoviesService from '../../services/movies-services'
 import Spinner from '../spinner'
 import ErrorHandler from '../error'
+import SearchBar from '../searchbar'
+import Pagination from '../pagination'
 
 function shortenText(text, maxLength) {
   if (text.length <= maxLength) {
@@ -61,6 +63,7 @@ export default function App() {
 
   return (
     <div className="section">
+      <SearchBar />
       <Online>
         {error.isError && <ErrorHandler errorMessage={error.errorMessage} errorDescription={error.errorDescription} />}
         {!load && <Spinner />}
@@ -69,6 +72,7 @@ export default function App() {
       <Offline>
         <Alert type="error" message="Проверьте подключение к сети" description="Ноу интернет коннектион" />
       </Offline>
+      <Pagination />
     </div>
   )
 }

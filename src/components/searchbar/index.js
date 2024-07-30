@@ -1,3 +1,3 @@
-// import App from './app'
+import SearchBar from './searchbar'
 
-// export default App
+export default SearchBar

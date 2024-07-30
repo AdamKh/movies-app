@@ -1,14 +1,25 @@
 import './item.css'
-import { Typography, Col } from 'antd'
+import { Typography, Col, Flex } from 'antd'
 import { format } from 'date-fns'
 
 const { Title, Text } = Typography
+
+function image(imageUrl) {
+  if (imageUrl) {
+    return <img alt="poster" className="movie_img" src={imageUrl} />
+  }
+  return (
+    <Flex className="movie_img" align="center" justify="center">
+      No poster
+    </Flex>
+  )
+}
 
 export default function Item({ title, text, imageUrl, releaseData }) {
   return (
     <Col span={12}>
       <div className="item">
-        <img alt="poster" className="movie_img" src={imageUrl} />
+        {image(imageUrl)}
         <div className="movie_info">
           <Title level={3} className="movie_title">
             {title}
