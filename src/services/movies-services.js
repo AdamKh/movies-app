@@ -34,6 +34,3 @@ export default class MoviesService {
     return posterPath ? `${this.#apiImageBase}${posterPath}` : null
   }
 }
-
-// const movieService = new MoviesService()
-// movieService.getImage('/xAuR564U2njKKcXSbfbq36rZLeA.jpg').then((res) => console.log(res))

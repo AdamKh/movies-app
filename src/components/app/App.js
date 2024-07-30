@@ -1,12 +1,13 @@
 import './app.css'
 // eslint-disable-next-line import/order
 import { useState, useEffect } from 'react'
-
-// eslint-disable-next-line import/no-extraneous-dependencies
+import { Offline, Online } from 'react-detect-offline'
+import { Alert } from 'antd'
 
 import ItemList from '../item-list'
 import MoviesService from '../../services/movies-services'
 import Spinner from '../spinner'
+import ErrorHandler from '../error'
 
 function shortenText(text, maxLength) {
   if (text.length <= maxLength) {
@@ -26,6 +27,11 @@ function shortenText(text, maxLength) {
 export default function App() {
   const [moviesList, setMoviesList] = useState([])
   const [load, setLoad] = useState(false)
+  const [error, setError] = useState({
+    isError: false,
+    errorMessage: null,
+    errorDescription: null,
+  })
 
   useEffect(() => {
     const movieService = new MoviesService()
@@ -33,7 +39,6 @@ export default function App() {
       .getMovies()
       .then((res) => res.results.slice(0, 6))
       .then((res) => {
-        // console.log(res)
         const items = res.map((movie) => ({
           id: movie.id,
           title: movie.title,
@@ -43,14 +48,27 @@ export default function App() {
         }))
         setMoviesList(items)
         setLoad(true)
-        // console.log(items)
+      })
+      .catch((err) => {
+        setLoad(true)
+        setError({
+          isError: true,
+          errorMessage: err.name,
+          errorDescription: err.message,
+        })
       })
   }, [])
 
   return (
     <div className="section">
-      {!load && <Spinner />}
-      <ItemList itemsList={moviesList} />
+      <Online>
+        {error.isError && <ErrorHandler errorMessage={error.errorMessage} errorDescription={error.errorDescription} />}
+        {!load && <Spinner />}
+        <ItemList itemsList={moviesList} />
+      </Online>
+      <Offline>
+        <Alert type="error" message="Проверьте подключение к сети" description="Ноу интернет коннектион" />
+      </Offline>
     </div>
   )
 }
