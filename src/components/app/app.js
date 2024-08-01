@@ -11,6 +11,8 @@ import EmptyQuery from '../error/empty-query'
 import SearchBar from '../searchbar'
 import Pagination from '../pagination'
 
+const movieService = new MoviesService()
+
 function shortenText(text, maxLength) {
   if (text.length <= maxLength) {
     return text
@@ -38,7 +40,6 @@ export default function App() {
   const [pagValue, setPagValue] = useState(1)
 
   useEffect(() => {
-    const movieService = new MoviesService()
     setLoading(false)
     movieService
       .getMovies(query, pagValue)
@@ -46,7 +47,7 @@ export default function App() {
         const items = res.results.map((movie) => ({
           id: movie.id,
           title: movie.title,
-          text: shortenText(movie.overview, 150),
+          text: shortenText(movie.overview, 130),
           imageUrl: movieService.getImage(movie.poster_path),
           releaseData: movie.release_date,
         }))
