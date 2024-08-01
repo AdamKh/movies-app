@@ -1,6 +1,10 @@
 import './item.css'
-import { Typography, Col, Flex } from 'antd'
+
+import React from 'react'
+import { Typography, Col, Flex, Rate } from 'antd'
 import { format } from 'date-fns'
+
+import { MovieAppConsumer } from '../movies-app-service-context'
 
 const { Title, Text } = Typography
 
@@ -22,23 +26,30 @@ function formatDate(releaseData) {
   return 'Дата релиза неизвестна'
 }
 
-export default function Item({ title, text, imageUrl, releaseData }) {
+export default function Item({ id, title, text, imageUrl, releaseData }) {
   return (
-    <Col span={12}>
-      <div className="item">
-        {image(imageUrl)}
-        <div className="movie_info">
-          <Title level={3} className="movie_title">
-            {title}
-          </Title>
-          <p className="movie_date">{formatDate(releaseData)}</p>
-          <div className="movie_genres">
-            <p className="genre">Action</p>
-            <p className="genre">Drama</p>
+    <MovieAppConsumer>
+      {({ postRating, guestSessionId }) => (
+        <Col span={12}>
+          <div className="item">
+            {image(imageUrl)}
+            <div className="movie_info">
+              <Title level={3} className="movie_title">
+                {title}
+              </Title>
+              <p className="movie_date">{formatDate(releaseData)}</p>
+              <div className="movie_genres">
+                <p className="genre">Action</p>
+                <p className="genre">Drama</p>
+              </div>
+              <Text className="movie_text">{text}</Text>
+              <div className="rate_wrapper">
+                <Rate allowHalf onChange={(rating) => postRating(guestSessionId, id, rating)} />
+              </div>
+            </div>
           </div>
-          <Text className="movie_text">{text}</Text>
-        </div>
-      </div>
-    </Col>
+        </Col>
+      )}
+    </MovieAppConsumer>
   )
 }

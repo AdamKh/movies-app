@@ -43,3 +43,8 @@
   flex: 1;
   padding: 10px 20px;
 }
+
+.rate_wrapper {
+  position: absolute;
+  bottom: 20px;
+}

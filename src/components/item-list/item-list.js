@@ -3,16 +3,17 @@ import { Row } from 'antd'
 
 import Item from '../item'
 
-export default function ItemList({ itemsList }) {
+export default function ItemList({ moviesList }) {
   return (
     <Row className="item-list" gutter={[36, 36]}>
-      {itemsList.map((item) => (
+      {moviesList.map((movie) => (
         <Item
-          title={item.title}
-          text={item.text}
-          key={item.id}
-          imageUrl={item.imageUrl}
-          releaseData={item.releaseData}
+          id={movie.id}
+          title={movie.title}
+          text={movie.text}
+          key={movie.id}
+          imageUrl={movie.imageUrl}
+          releaseData={movie.releaseData}
         />
       ))}
     </Row>

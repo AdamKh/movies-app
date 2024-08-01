@@ -10,6 +10,7 @@ import ErrorHandler from '../error/error-handler'
 import EmptyQuery from '../error/empty-query'
 import SearchBar from '../searchbar'
 import Pagination from '../pagination'
+import { MovieAppProvider } from '../movies-app-service-context'
 
 const movieService = new MoviesService()
 
@@ -40,6 +41,27 @@ export default function App() {
   const [pagValue, setPagValue] = useState(1)
 
   useEffect(() => {
+    movieService
+      .createSessionId()
+      .then((res) => {
+        const guestSessionId = localStorage.getItem('guest_session_id')
+        if (!guestSessionId) {
+          const { guest_session_id: newQuestSessionId } = res
+          localStorage.setItem('guest_session_id', newQuestSessionId)
+        }
+        // movieService.getRated(localStorage.getItem('guest_session_id')).then((resm) => console.log(resm))
+      })
+      .catch((err) => {
+        setLoading(true)
+        setError({
+          isError: true,
+          errorMessage: err.name,
+          errorDescription: err.message,
+        })
+      })
+  }, [])
+
+  useEffect(() => {
     setLoading(false)
     movieService
       .getMovies(query, pagValue)
@@ -47,7 +69,7 @@ export default function App() {
         const items = res.results.map((movie) => ({
           id: movie.id,
           title: movie.title,
-          text: shortenText(movie.overview, 130),
+          text: shortenText(movie.overview, 100),
           imageUrl: movieService.getImage(movie.poster_path),
           releaseData: movie.release_date,
         }))
@@ -66,28 +88,43 @@ export default function App() {
 
   return (
     <div className="section">
-      <SearchBar setQuery={setQuery} />
-      <Online>
-        {(() => {
-          if (!isLoaded) {
-            return <Spinner />
-          }
+      <MovieAppProvider
+        value={{
+          postRating: (guestSessionId, id, rating) => movieService.postRating(guestSessionId, id, rating),
+          guestSessionId: localStorage.getItem('guest_session_id'),
+        }}
+      >
+        <SearchBar setQuery={setQuery} />
+        <Online>
+          {(() => {
+            if (!isLoaded) {
+              return <Spinner />
+            }
 
-          if (error.isError) {
-            return <ErrorHandler errorMessage={error.errorMessage} errorDescription={error.errorDescription} />
-          }
+            if (error.isError) {
+              return <ErrorHandler errorMessage={error.errorMessage} errorDescription={error.errorDescription} />
+            }
 
-          if (moviesList.length === 0) {
-            return <EmptyQuery errorDescription="Фильмы с таким названием не найдены" />
-          }
+            if (moviesList.length === 0) {
+              return <EmptyQuery errorDescription="Фильмы с таким названием не найдены" />
+            }
 
-          return <ItemList itemsList={moviesList} />
-        })()}
-      </Online>
-      <Offline>
-        <ErrorHandler errorMessage="Проверьте подключение к сети" errorDescription="Ноу интернет коннектион" />
-      </Offline>
-      <Pagination setPagValue={setPagValue} />
+            return <ItemList moviesList={moviesList} />
+          })()}
+        </Online>
+        <Offline>
+          <ErrorHandler errorMessage="Проверьте подключение к сети" errorDescription="Ноу интернет коннектион" />
+        </Offline>
+        <button
+          type="button"
+          onClick={() =>
+            movieService.getRated(localStorage.getItem('guest_session_id')).then((ratedmov) => console.log(ratedmov))
+          }
+        >
+          button
+        </button>
+        <Pagination setPagValue={setPagValue} />
+      </MovieAppProvider>
     </div>
   )
 }
