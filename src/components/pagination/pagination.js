@@ -3,7 +3,7 @@ import { Pagination as AntdPagination } from 'antd'
 
 import { MovieAppConsumer } from '../movies-app-service-context'
 
-export default function Pagination() {
+export default function Pagination({ total }) {
   return (
     <MovieAppConsumer>
       {({ setPagValue }) => (
@@ -12,7 +12,7 @@ export default function Pagination() {
           align="center"
           defaultCurrent={1}
           showSizeChanger={false}
-          total={500}
+          total={total || 500}
           pageSize={20}
           onChange={(page) => {
             setPagValue(page)

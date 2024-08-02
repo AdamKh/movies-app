@@ -37,16 +37,6 @@ export default function SearchTab() {
             <Offline>
               <ErrorHandler errorMessage="Проверьте подключение к сети" errorDescription="Ноу интернет коннектион" />
             </Offline>
-            {/* <button
-              type="button"
-              onClick={() =>
-                movieService
-                  .getRated(localStorage.getItem('guest_session_id'))
-                  .then((ratedmov) => console.log(ratedmov))
-              }
-            >
-              button
-            </button> */}
             <Pagination />
           </>
         )}

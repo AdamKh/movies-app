@@ -91,18 +91,31 @@ export default function App() {
 
   // Получение списка оценненных фильмов
   useEffect(() => {
-    movieService.getRated(localStorage.getItem('guest_session_id')).then((ratedMovies) => {
-      const items = ratedMovies.results.map((ratedMovie) => ({
-        id: ratedMovie.id,
-        title: ratedMovie.title,
-        text: shortenText(ratedMovie.overview, 100),
-        imageUrl: movieService.getImage(ratedMovie.poster_path),
-        releaseData: ratedMovie.release_date,
-        genreIds: ratedMovie.genre_ids,
-        rating: ratedMovie.rating,
-      }))
-      setRatedMoviesList(items)
-    })
+    const guestSessionId = localStorage.getItem('guest_session_id')
+    movieService
+      .getRated(guestSessionId)
+      .then((ratedMovies) => {
+        if (ratedMovies.results && ratedMovies.results.length > 0) {
+          const items = ratedMovies.results.map((ratedMovie) => ({
+            id: ratedMovie.id,
+            title: ratedMovie.title,
+            text: shortenText(ratedMovie.overview, 100),
+            imageUrl: movieService.getImage(ratedMovie.poster_path),
+            releaseData: ratedMovie.release_date,
+            genreIds: ratedMovie.genre_ids,
+            rating: ratedMovie.rating,
+          }))
+
+          setRatedMoviesList((prevRatedMoviesList) => {
+            const movieIds = new Set(prevRatedMoviesList.map((movie) => movie.id))
+            return [...prevRatedMoviesList, ...items.filter((movie) => !movieIds.has(movie.id))]
+          })
+        }
+      })
+      .catch(() => {
+        // Обрабатываем случай, когда нет оценённых фильмов
+        setRatedMoviesList([])
+      })
   }, [pagValue])
 
   // Добавление и обновление свойства rating для moviesList
