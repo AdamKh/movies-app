@@ -50,6 +50,7 @@ export default function App() {
   const [query, setQuery] = useState('return')
   const [pagValue, setPagValue] = useState(1)
 
+  // Создание guest_session_id при необходимости
   useEffect(() => {
     movieService.createSessionId().then((res) => {
       const guestSessionId = localStorage.getItem('guest_session_id')
@@ -58,30 +59,25 @@ export default function App() {
         localStorage.setItem('guest_session_id', newGuestSessionId)
       }
     })
-    movieService.getRated(localStorage.getItem('guest_session_id')).then((ratedMovies) => {
-      const items = ratedMovies.results.map((ratedMovie) => ({
-        id: ratedMovie.id,
-        rating: ratedMovie.rating,
-      }))
-      setRatedMoviesList(items)
-    })
   }, [])
 
+  // Получение списка фильмов по запросу либо по пагинации
   useEffect(() => {
     setLoading(false)
     movieService
       .getMovies(query, pagValue)
       .then((movies) => {
+        // console.log(movies.results)
         const items = movies.results.map((movie) => ({
           id: movie.id,
           title: movie.title,
           text: shortenText(movie.overview, 100),
           imageUrl: movieService.getImage(movie.poster_path),
           releaseData: movie.release_date,
+          genreIds: movie.genre_ids,
         }))
         setMoviesList(items)
         setLoading(true)
-        // console.log(items)
       })
       .catch((err) => {
         setLoading(true)
@@ -92,6 +88,32 @@ export default function App() {
         })
       })
   }, [query, pagValue])
+
+  // Получение списка оценненных фильмов
+  useEffect(() => {
+    movieService.getRated(localStorage.getItem('guest_session_id')).then((ratedMovies) => {
+      const items = ratedMovies.results.map((ratedMovie) => ({
+        id: ratedMovie.id,
+        title: ratedMovie.title,
+        text: shortenText(ratedMovie.overview, 100),
+        imageUrl: movieService.getImage(ratedMovie.poster_path),
+        releaseData: ratedMovie.release_date,
+        genreIds: ratedMovie.genre_ids,
+        rating: ratedMovie.rating,
+      }))
+      setRatedMoviesList(items)
+    })
+  }, [pagValue])
+
+  // Добавление и обновление свойства rating для moviesList
+  useEffect(() => {
+    setMoviesList((prevMoviesList) =>
+      prevMoviesList.map((movie) => ({
+        ...movie,
+        rating: (ratedMoviesList.find((ratedMovie) => ratedMovie.id === movie.id) || {}).rating,
+      }))
+    )
+  }, [ratedMoviesList])
 
   return (
     <div className="section">

@@ -54,8 +54,24 @@ export default function Item({ id, title, text, imageUrl, releaseData, rating })
                   allowHalf
                   value={ratingStatus}
                   onChange={(newRating) => {
-                    setRatedMoviesList([...ratedMoviesList, { id, rating }])
                     setRatingStatus(newRating)
+
+                    // Найти индекс существующего элемента в ratedMoviesList
+                    const index = ratedMoviesList.findIndex((ratedMovie) => ratedMovie.id === id)
+
+                    if (index !== -1) {
+                      // Создать новый список с обновленным фильмом
+                      const updatedList = [...ratedMoviesList]
+                      updatedList[index] = { ...ratedMoviesList[index], rating: newRating }
+                      setRatedMoviesList(updatedList)
+                    } else {
+                      // Если фильм не найден, добавить его в список
+                      setRatedMoviesList([
+                        ...ratedMoviesList,
+                        { id, title, text, imageUrl, releaseData, rating: newRating },
+                      ])
+                    }
+
                     movieService.postRating(guestSessionId, id, newRating)
                   }}
                 />
