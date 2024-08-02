@@ -1,0 +1,12 @@
+.section {
+  padding: 0 10px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  margin: 0 auto;
+  max-width: 1010px;
+  background-color: #fff;
+}
+
+.offline {
+  margin-top: 34px !important;
+}

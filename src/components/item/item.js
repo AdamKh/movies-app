@@ -1,6 +1,6 @@
 import './item.css'
 
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { Typography, Col, Flex, Rate } from 'antd'
 import { format } from 'date-fns'
 
@@ -26,10 +26,16 @@ function formatDate(releaseData) {
   return 'Дата релиза неизвестна'
 }
 
-export default function Item({ id, title, text, imageUrl, releaseData }) {
+export default function Item({ id, title, text, imageUrl, releaseData, rating }) {
+  const [ratingStatus, setRatingStatus] = useState(rating)
+
+  useEffect(() => {
+    setRatingStatus(rating)
+  }, [rating])
+
   return (
     <MovieAppConsumer>
-      {({ postRating, guestSessionId }) => (
+      {({ movieService, guestSessionId, ratedMoviesList, setRatedMoviesList }) => (
         <Col span={12}>
           <div className="item">
             {image(imageUrl)}
@@ -44,7 +50,15 @@ export default function Item({ id, title, text, imageUrl, releaseData }) {
               </div>
               <Text className="movie_text">{text}</Text>
               <div className="rate_wrapper">
-                <Rate allowHalf onChange={(rating) => postRating(guestSessionId, id, rating)} />
+                <Rate
+                  allowHalf
+                  value={ratingStatus}
+                  onChange={(newRating) => {
+                    setRatedMoviesList([...ratedMoviesList, { id, rating }])
+                    setRatingStatus(newRating)
+                    movieService.postRating(guestSessionId, id, newRating)
+                  }}
+                />
               </div>
             </div>
           </div>

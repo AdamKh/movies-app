@@ -31,7 +31,7 @@ export default class MoviesService {
     return res.json()
   }
 
-  getMovies(query, page) {
+  async getMovies(query, page) {
     return this.getResource(
       `/3/search/movie?include_adult=false&language=en-US&page=${page}&query=${query}&api_key=${this.#apiKey}`
     )
