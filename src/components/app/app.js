@@ -41,14 +41,18 @@ function shortenText(text, maxLength) {
 export default function App() {
   const [moviesList, setMoviesList] = useState([])
   const [ratedMoviesList, setRatedMoviesList] = useState([])
-  const [isLoaded, setLoading] = useState(false)
+  const [isLoaded, setLoaded] = useState(false)
   const [error, setError] = useState({
     isError: false,
     errorMessage: null,
     errorDescription: null,
   })
   const [query, setQuery] = useState('return')
-  const [pagValue, setPagValue] = useState(1)
+  const [searchPagValue, setSearchPagValue] = useState(1)
+  const [searchTotal, setSearchTotal] = useState(1)
+  const [ratedPagValue, setRatedPagValue] = useState(0)
+  const [ratedTotal, setRatedTotal] = useState(0)
+  const [ratingsLoaded, setRatingsLoaded] = useState(false)
 
   // Создание guest_session_id при необходимости +
   // Получение списка оценненных фильмов
@@ -63,7 +67,7 @@ export default function App() {
 
     movieService
       .getAllRatedMovies(guestSessionId)
-      .then((ratedMovies) => {
+      .then(({ allMovies: ratedMovies, totalResults }) => {
         if (ratedMovies && ratedMovies.length > 0) {
           const items = ratedMovies.map((ratedMovie) => ({
             id: ratedMovie.id,
@@ -75,29 +79,26 @@ export default function App() {
             rating: ratedMovie.rating,
           }))
 
-          // Объединяем новые фильмы с существующим списком, избегая дублирования
           setRatedMoviesList(items)
+          setRatedTotal(totalResults)
+          setRatingsLoaded(true)
         }
       })
       .catch(() => {
         // Обрабатываем случай, когда нет оценённых фильмов
         setRatedMoviesList([])
+        setRatedTotal(0)
+        setRatingsLoaded(true)
       })
   }, [])
 
-  // Перенос на 1 страницу при вводе
-  useEffect(() => {
-    setPagValue(1)
-  }, [query])
-
   // Получение списка фильмов по запросу либо по пагинации
   useEffect(() => {
-    setLoading(false)
-
+    setLoaded(false)
     movieService
-      .getMovies(query, pagValue)
+      .getMovies(query, searchPagValue)
       .then((movies) => {
-        // console.log(movies.results)
+        setSearchTotal(movies.total_results)
         const items = movies.results.map((movie) => ({
           id: movie.id,
           title: movie.title,
@@ -107,27 +108,46 @@ export default function App() {
           genreIds: movie.genre_ids,
         }))
         setMoviesList(items)
-        setLoading(true)
       })
       .catch((err) => {
-        setLoading(true)
         setError({
           isError: true,
           errorMessage: err.name,
           errorDescription: err.message,
         })
+        setLoaded(true)
       })
-  }, [query, pagValue])
+  }, [query, searchPagValue])
+
+  // Перенос на 1 страницу при вводе
+  useEffect(() => {
+    setSearchPagValue(1)
+  }, [query])
 
   // Добавление и обновление свойства rating для moviesList
   useEffect(() => {
-    setMoviesList((prevMoviesList) =>
-      prevMoviesList.map((movie) => ({
-        ...movie,
-        rating: (ratedMoviesList.find((ratedMovie) => ratedMovie.id === movie.id) || {}).rating,
-      }))
-    )
-  }, [ratedMoviesList, moviesList, pagValue])
+    setLoaded(false)
+    if (ratingsLoaded) {
+      setMoviesList((prevMoviesList) => {
+        // Создаем обновленный список фильмов с добавлением рейтингов
+        const updatedMoviesList = prevMoviesList.map((movie) => {
+          const ratedMovieData = ratedMoviesList.find((ratedMovie) => ratedMovie.id === movie.id)
+          const newRating = ratedMovieData ? ratedMovieData.rating : undefined
+          return { ...movie, rating: newRating }
+        })
+
+        // Проверяем, изменился ли список фильмов
+        const isChanged = updatedMoviesList.some((movie, index) => movie.rating !== prevMoviesList[index].rating)
+
+        // Возвращаем новый список фильмов, только если он изменился
+        if (isChanged) {
+          return updatedMoviesList
+        }
+        return prevMoviesList
+      })
+      setLoaded(true)
+    }
+  }, [ratedMoviesList, moviesList, searchPagValue, ratingsLoaded])
 
   return (
     <div className="section">
@@ -138,15 +158,18 @@ export default function App() {
           moviesList,
           setMoviesList,
           isLoaded,
-          setLoading,
           error,
           setError,
           query,
           setQuery,
-          pagValue,
-          setPagValue,
           ratedMoviesList,
           setRatedMoviesList,
+          searchPagValue,
+          setSearchPagValue,
+          searchTotal,
+          ratedPagValue,
+          setRatedPagValue,
+          ratedTotal,
         }}
       >
         <Tabs centered defaultActiveKey="1" items={tabs} destroyInactiveTabPane />

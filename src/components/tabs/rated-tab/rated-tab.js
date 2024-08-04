@@ -13,7 +13,7 @@ export default function RatedTab() {
   return (
     <div className="section">
       <MovieAppConsumer>
-        {({ ratedMoviesList, isLoaded, error }) => (
+        {({ ratedMoviesList, isLoaded, error, ratedPagValue, setRatedPagValue, ratedTotal }) => (
           <>
             <Online>
               {(() => {
@@ -35,7 +35,7 @@ export default function RatedTab() {
             <Offline>
               <ErrorHandler errorMessage="Проверьте подключение к сети" errorDescription="Ноу интернет коннектион" />
             </Offline>
-            <Pagination total={ratedMoviesList.length || 1} />
+            <Pagination total={ratedTotal} pagValue={ratedPagValue} setPagValue={setRatedPagValue} />
           </>
         )}
       </MovieAppConsumer>

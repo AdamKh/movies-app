@@ -14,7 +14,7 @@ export default function SearchTab() {
   return (
     <div className="section">
       <MovieAppConsumer>
-        {({ moviesList, setQuery, isLoaded, error }) => (
+        {({ moviesList, setQuery, isLoaded, error, searchPagValue, setSearchPagValue, searchTotal }) => (
           <>
             <SearchBar setQuery={setQuery} />
             <Online>
@@ -37,7 +37,7 @@ export default function SearchTab() {
             <Offline>
               <ErrorHandler errorMessage="Проверьте подключение к сети" errorDescription="Ноу интернет коннектион" />
             </Offline>
-            <Pagination />
+            <Pagination total={searchTotal} pagValue={searchPagValue} setPagValue={setSearchPagValue} />
           </>
         )}
       </MovieAppConsumer>

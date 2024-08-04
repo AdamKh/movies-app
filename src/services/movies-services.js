@@ -56,6 +56,7 @@ export default class MoviesService {
     const allMovies = []
     let page = 1
     let totalPages = 1
+    let totalResults = 1
 
     while (page <= totalPages) {
       // Используем this.getResource вместо getResource
@@ -64,9 +65,10 @@ export default class MoviesService {
 
       allMovies.push(...data.results)
       totalPages = data.total_pages
+      totalResults = data.total_results
       page += 1
     }
 
-    return allMovies
+    return { allMovies, totalResults }
   }
 }
