@@ -53,8 +53,9 @@ export default function App() {
   const [ratedPagValue, setRatedPagValue] = useState(1)
   const [ratedTotal, setRatedTotal] = useState(0)
   const [ratingsLoaded, setRatingsLoaded] = useState(false)
+  const [genresList, setGenresList] = useState([])
 
-  // Загружает оцененные фильмы
+  // Загружает оцененные фильмы и жанры
   const loadRatedMovies = (guestSessionId) => {
     movieService
       .getAllRatedMovies(guestSessionId)
@@ -83,6 +84,10 @@ export default function App() {
         setRatedTotal(0)
         setRatingsLoaded(true)
       })
+
+    movieService.getGenres().then((genres) => {
+      setGenresList(genres)
+    })
   }
 
   // Создание guest_session_id при необходимости и получение списка оценненных фильмов
@@ -178,6 +183,7 @@ export default function App() {
           ratedPagValue,
           setRatedPagValue,
           ratedTotal,
+          genresList,
         }}
       >
         <Tabs centered defaultActiveKey="1" items={tabs} destroyInactiveTabPane />

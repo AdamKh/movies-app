@@ -7,7 +7,7 @@ import classNames from 'classnames'
 
 import { MovieAppConsumer } from '../movies-app-service-context'
 
-const { Title, Text } = Typography
+const { Title } = Typography
 
 function image(imageUrl) {
   if (imageUrl) {
@@ -27,7 +27,19 @@ function formatDate(releaseData) {
   return 'Дата релиза неизвестна'
 }
 
-export default function Item({ id, title, text, imageUrl, releaseData, rating, voteAverage }) {
+function genres(genresList, genreIds) {
+  let arr = []
+  if (genreIds.length) {
+    arr = genreIds.map((genreId) => (
+      <p className="genre">{genresList.find((genresListItem) => genresListItem.id === genreId).name}</p>
+    ))
+  } else {
+    arr.push(<p className="genre">Без жанра</p>)
+  }
+  return arr
+}
+
+export default function Item({ id, title, text, imageUrl, releaseData, rating, voteAverage, genreIds }) {
   const [ratingStatus, setRatingStatus] = useState(rating)
 
   useEffect(() => {
@@ -44,7 +56,7 @@ export default function Item({ id, title, text, imageUrl, releaseData, rating, v
 
   return (
     <MovieAppConsumer>
-      {({ movieService, guestSessionId, ratedMoviesList, setRatedMoviesList }) => (
+      {({ movieService, guestSessionId, ratedMoviesList, setRatedMoviesList, genresList }) => (
         <Col span={12}>
           <div className="item">
             {image(imageUrl)}
@@ -53,11 +65,8 @@ export default function Item({ id, title, text, imageUrl, releaseData, rating, v
                 {title}
               </Title>
               <p className="movie_date">{formatDate(releaseData)}</p>
-              <div className="movie_genres">
-                <p className="genre">Action</p>
-                <p className="genre">Drama</p>
-              </div>
-              <Text className="movie_text">{text}</Text>
+              <Flex className="movie_genres">{genres(genresList, genreIds)}</Flex>
+              <p className="movie_text">{text}</p>
               <div className="rate_wrapper">
                 <Rate
                   allowHalf

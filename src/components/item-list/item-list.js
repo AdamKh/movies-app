@@ -8,14 +8,15 @@ export default function ItemList({ moviesList }) {
     <Row className="item-list" gutter={[36, 36]}>
       {moviesList.map((movie) => (
         <Item
+          key={movie.id}
           id={movie.id}
           title={movie.title}
           text={movie.text}
-          key={movie.id}
           imageUrl={movie.imageUrl}
           releaseData={movie.releaseData}
           rating={movie.rating}
           voteAverage={movie.voteAverage}
+          genreIds={movie.genreIds}
         />
       ))}
     </Row>

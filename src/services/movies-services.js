@@ -52,6 +52,11 @@ export default class MoviesService {
     return this.getResource(`/3/guest_session/${guestSessionId}/rated/movies?api_key=${this.#apiKey}&page=${page}`)
   }
 
+  async getGenres() {
+    const genresObj = await this.getResource(`/3/genre/movie/list?language=en?api_key=${this.#apiKey}`)
+    return genresObj.genres
+  }
+
   async getAllRatedMovies(guestSessionId) {
     const allMovies = []
     let page = 1
