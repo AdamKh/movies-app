@@ -50,20 +50,50 @@ export default function App() {
   const [query, setQuery] = useState('return')
   const [pagValue, setPagValue] = useState(1)
 
-  // Создание guest_session_id при необходимости
+  // Создание guest_session_id при необходимости +
+  // Получение списка оценненных фильмов
   useEffect(() => {
-    movieService.createSessionId().then((res) => {
-      const guestSessionId = localStorage.getItem('guest_session_id')
-      if (!guestSessionId) {
+    const guestSessionId = localStorage.getItem('guest_session_id')
+    if (!guestSessionId) {
+      movieService.createSessionId().then((res) => {
         const { guest_session_id: newGuestSessionId } = res
         localStorage.setItem('guest_session_id', newGuestSessionId)
-      }
-    })
+      })
+    }
+
+    movieService
+      .getAllRatedMovies(guestSessionId)
+      .then((ratedMovies) => {
+        if (ratedMovies && ratedMovies.length > 0) {
+          const items = ratedMovies.map((ratedMovie) => ({
+            id: ratedMovie.id,
+            title: ratedMovie.title,
+            text: shortenText(ratedMovie.overview, 100),
+            imageUrl: movieService.getImage(ratedMovie.poster_path),
+            releaseData: ratedMovie.release_date,
+            genreIds: ratedMovie.genre_ids,
+            rating: ratedMovie.rating,
+          }))
+
+          // Объединяем новые фильмы с существующим списком, избегая дублирования
+          setRatedMoviesList(items)
+        }
+      })
+      .catch(() => {
+        // Обрабатываем случай, когда нет оценённых фильмов
+        setRatedMoviesList([])
+      })
   }, [])
+
+  // Перенос на 1 страницу при вводе
+  useEffect(() => {
+    setPagValue(1)
+  }, [query])
 
   // Получение списка фильмов по запросу либо по пагинации
   useEffect(() => {
     setLoading(false)
+
     movieService
       .getMovies(query, pagValue)
       .then((movies) => {
@@ -89,35 +119,6 @@ export default function App() {
       })
   }, [query, pagValue])
 
-  // Получение списка оценненных фильмов
-  useEffect(() => {
-    const guestSessionId = localStorage.getItem('guest_session_id')
-    movieService
-      .getRated(guestSessionId)
-      .then((ratedMovies) => {
-        if (ratedMovies.results && ratedMovies.results.length > 0) {
-          const items = ratedMovies.results.map((ratedMovie) => ({
-            id: ratedMovie.id,
-            title: ratedMovie.title,
-            text: shortenText(ratedMovie.overview, 100),
-            imageUrl: movieService.getImage(ratedMovie.poster_path),
-            releaseData: ratedMovie.release_date,
-            genreIds: ratedMovie.genre_ids,
-            rating: ratedMovie.rating,
-          }))
-
-          setRatedMoviesList((prevRatedMoviesList) => {
-            const movieIds = new Set(prevRatedMoviesList.map((movie) => movie.id))
-            return [...prevRatedMoviesList, ...items.filter((movie) => !movieIds.has(movie.id))]
-          })
-        }
-      })
-      .catch(() => {
-        // Обрабатываем случай, когда нет оценённых фильмов
-        setRatedMoviesList([])
-      })
-  }, [pagValue])
-
   // Добавление и обновление свойства rating для moviesList
   useEffect(() => {
     setMoviesList((prevMoviesList) =>
@@ -126,7 +127,7 @@ export default function App() {
         rating: (ratedMoviesList.find((ratedMovie) => ratedMovie.id === movie.id) || {}).rating,
       }))
     )
-  }, [ratedMoviesList])
+  }, [ratedMoviesList, moviesList, pagValue])
 
   return (
     <div className="section">
@@ -148,7 +149,7 @@ export default function App() {
           setRatedMoviesList,
         }}
       >
-        <Tabs centered defaultActiveKey="1" items={tabs} />
+        <Tabs centered defaultActiveKey="1" items={tabs} destroyInactiveTabPane />
       </MovieAppProvider>
     </div>
   )
