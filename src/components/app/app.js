@@ -68,6 +68,7 @@ export default function App() {
             releaseData: ratedMovie.release_date,
             genreIds: ratedMovie.genre_ids,
             rating: ratedMovie.rating,
+            voteAverage: ratedMovie.vote_average,
           }))
 
           setRatedMoviesList(items)
@@ -112,6 +113,7 @@ export default function App() {
           imageUrl: movieService.getImage(movie.poster_path),
           releaseData: movie.release_date,
           genreIds: movie.genre_ids,
+          voteAverage: movie.vote_average,
         }))
         setMoviesList(items)
       })

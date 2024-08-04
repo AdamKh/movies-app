@@ -15,6 +15,7 @@ export default function ItemList({ moviesList }) {
           imageUrl={movie.imageUrl}
           releaseData={movie.releaseData}
           rating={movie.rating}
+          voteAverage={movie.voteAverage}
         />
       ))}
     </Row>

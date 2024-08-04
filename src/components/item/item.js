@@ -3,6 +3,7 @@ import './item.css'
 import React, { useState, useEffect } from 'react'
 import { Typography, Col, Flex, Rate } from 'antd'
 import { format } from 'date-fns'
+import classNames from 'classnames'
 
 import { MovieAppConsumer } from '../movies-app-service-context'
 
@@ -26,12 +27,20 @@ function formatDate(releaseData) {
   return 'Дата релиза неизвестна'
 }
 
-export default function Item({ id, title, text, imageUrl, releaseData, rating }) {
+export default function Item({ id, title, text, imageUrl, releaseData, rating, voteAverage }) {
   const [ratingStatus, setRatingStatus] = useState(rating)
 
   useEffect(() => {
     setRatingStatus(rating)
   }, [rating])
+
+  const itemClassNames = classNames({
+    vote_average: true,
+    redBorder: voteAverage < 3,
+    orangeBorder: voteAverage >= 3 && voteAverage < 5,
+    yellowBorder: voteAverage >= 5 && voteAverage < 7,
+    greenBorder: voteAverage >= 7,
+  })
 
   return (
     <MovieAppConsumer>
@@ -68,7 +77,7 @@ export default function Item({ id, title, text, imageUrl, releaseData, rating })
                       // Если фильм не найден, добавить его в список
                       setRatedMoviesList([
                         ...ratedMoviesList,
-                        { id, title, text, imageUrl, releaseData, rating: newRating },
+                        { id, title, text, imageUrl, releaseData, voteAverage, rating: newRating },
                       ])
                     }
 
@@ -77,6 +86,9 @@ export default function Item({ id, title, text, imageUrl, releaseData, rating })
                 />
               </div>
             </div>
+            <Flex className={itemClassNames} align="center" justify="center">
+              {voteAverage.toFixed(1)}
+            </Flex>
           </div>
         </Col>
       )}
