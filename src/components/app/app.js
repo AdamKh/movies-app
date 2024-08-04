@@ -49,22 +49,13 @@ export default function App() {
   })
   const [query, setQuery] = useState('return')
   const [searchPagValue, setSearchPagValue] = useState(1)
-  const [searchTotal, setSearchTotal] = useState(1)
-  const [ratedPagValue, setRatedPagValue] = useState(0)
+  const [searchTotal, setSearchTotal] = useState(0)
+  const [ratedPagValue, setRatedPagValue] = useState(1)
   const [ratedTotal, setRatedTotal] = useState(0)
   const [ratingsLoaded, setRatingsLoaded] = useState(false)
 
-  // Создание guest_session_id при необходимости +
-  // Получение списка оценненных фильмов
-  useEffect(() => {
-    const guestSessionId = localStorage.getItem('guest_session_id')
-    if (!guestSessionId) {
-      movieService.createSessionId().then((res) => {
-        const { guest_session_id: newGuestSessionId } = res
-        localStorage.setItem('guest_session_id', newGuestSessionId)
-      })
-    }
-
+  // Загружает оцененные фильмы
+  const loadRatedMovies = (guestSessionId) => {
     movieService
       .getAllRatedMovies(guestSessionId)
       .then(({ allMovies: ratedMovies, totalResults }) => {
@@ -82,14 +73,29 @@ export default function App() {
           setRatedMoviesList(items)
           setRatedTotal(totalResults)
           setRatingsLoaded(true)
+        } else {
+          setRatingsLoaded(true) // Устанавливаем как загруженные, даже если фильмов нет
         }
       })
       .catch(() => {
-        // Обрабатываем случай, когда нет оценённых фильмов
         setRatedMoviesList([])
         setRatedTotal(0)
         setRatingsLoaded(true)
       })
+  }
+
+  // Создание guest_session_id при необходимости и получение списка оценненных фильмов
+  useEffect(() => {
+    const guestSessionId = localStorage.getItem('guest_session_id')
+    if (!guestSessionId) {
+      movieService.createSessionId().then((res) => {
+        const { guest_session_id: newGuestSessionId } = res
+        localStorage.setItem('guest_session_id', newGuestSessionId)
+        loadRatedMovies(newGuestSessionId)
+      })
+    } else {
+      loadRatedMovies(guestSessionId)
+    }
   }, [])
 
   // Получение списка фильмов по запросу либо по пагинации

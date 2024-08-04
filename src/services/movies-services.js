@@ -59,7 +59,6 @@ export default class MoviesService {
     let totalResults = 1
 
     while (page <= totalPages) {
-      // Используем this.getResource вместо getResource
       // eslint-disable-next-line no-await-in-loop
       const data = await this.getRatedPage(guestSessionId, page)
 
