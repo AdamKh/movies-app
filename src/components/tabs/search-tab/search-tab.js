@@ -1,4 +1,4 @@
-import '../app.css'
+import '../tab.css'
 
 import { Offline, Online } from 'react-detect-offline'
 
@@ -12,35 +12,33 @@ import { MovieAppConsumer } from '../../movies-app-service-context'
 
 export default function SearchTab() {
   return (
-    <div className="section">
-      <MovieAppConsumer>
-        {({ moviesList, setQuery, isLoaded, error, searchPagValue, setSearchPagValue, searchTotal }) => (
-          <>
-            <SearchBar setQuery={setQuery} />
-            <Online>
-              {(() => {
-                if (!isLoaded) {
-                  return <Spinner />
-                }
+    <MovieAppConsumer>
+      {({ moviesList, setQuery, isLoaded, error, searchPagValue, setSearchPagValue, searchTotal }) => (
+        <>
+          <SearchBar setQuery={setQuery} />
+          <Online>
+            {(() => {
+              if (!isLoaded) {
+                return <Spinner />
+              }
 
-                if (error.isError) {
-                  return <ErrorHandler errorMessage={error.errorMessage} errorDescription={error.errorDescription} />
-                }
+              if (error.isError) {
+                return <ErrorHandler errorMessage={error.errorMessage} errorDescription={error.errorDescription} />
+              }
 
-                if (moviesList.length === 0) {
-                  return <EmptyQuery errorDescription="Фильмы с таким названием не найдены" />
-                }
+              if (moviesList.length === 0) {
+                return <EmptyQuery errorDescription="Фильмы с таким названием не найдены" />
+              }
 
-                return <ItemList moviesList={moviesList} />
-              })()}
-            </Online>
-            <Offline>
-              <ErrorHandler errorMessage="Проверьте подключение к сети" errorDescription="Ноу интернет коннектион" />
-            </Offline>
-            <Pagination total={searchTotal} pagValue={searchPagValue} setPagValue={setSearchPagValue} />
-          </>
-        )}
-      </MovieAppConsumer>
-    </div>
+              return <ItemList moviesList={moviesList} />
+            })()}
+          </Online>
+          <Offline>
+            <ErrorHandler errorMessage="Проверьте подключение к сети" errorDescription="Ноу интернет коннектион" />
+          </Offline>
+          <Pagination total={searchTotal} pagValue={searchPagValue} setPagValue={setSearchPagValue} />
+        </>
+      )}
+    </MovieAppConsumer>
   )
 }

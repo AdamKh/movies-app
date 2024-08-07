@@ -15,7 +15,7 @@ function image(imageUrl) {
   }
   return (
     <Flex className="movie_img" align="center" justify="center">
-      No poster
+      <img alt="poster" src="../../img/no-image.svg" />
     </Flex>
   )
 }
@@ -30,11 +30,20 @@ function formatDate(releaseData) {
 function genres(genresList, genreIds) {
   let arr = []
   if (genreIds.length) {
-    arr = genreIds.map((genreId) => (
-      <p className="genre">{genresList.find((genresListItem) => genresListItem.id === genreId).name}</p>
-    ))
+    arr = genreIds.map((genreId) => {
+      const genre = genresList.find((genresListItem) => genresListItem.id === genreId)
+      return (
+        <p key={genreId} className="genre">
+          {genre.name}
+        </p>
+      )
+    })
   } else {
-    arr.push(<p className="genre">Без жанра</p>)
+    arr.push(
+      <p key="no-genre" className="genre">
+        Без жанра
+      </p>
+    )
   }
   return arr
 }
@@ -57,7 +66,7 @@ export default function Item({ id, title, text, imageUrl, releaseData, rating, v
   return (
     <MovieAppConsumer>
       {({ movieService, guestSessionId, ratedMoviesList, setRatedMoviesList, genresList }) => (
-        <Col span={12}>
+        <Col xs={24} sm={24} md={12} lg={12} xl={12}>
           <div className="item">
             {image(imageUrl)}
             <div className="movie_info">

@@ -1,4 +1,4 @@
-import '../app.css'
+import '../tab.css'
 
 import { Offline, Online } from 'react-detect-offline'
 
@@ -13,34 +13,32 @@ const ratedMoviesListHandler = (moviesList, page = 1) => moviesList.slice(20 * (
 
 export default function RatedTab() {
   return (
-    <div className="section">
-      <MovieAppConsumer>
-        {({ ratedMoviesList, isLoaded, error, ratedPagValue, setRatedPagValue, ratedTotal }) => (
-          <>
-            <Online>
-              {(() => {
-                if (!isLoaded) {
-                  return <Spinner />
-                }
+    <MovieAppConsumer>
+      {({ ratedMoviesList, isLoaded, error, ratedPagValue, setRatedPagValue, ratedTotal }) => (
+        <>
+          <Online>
+            {(() => {
+              if (!isLoaded) {
+                return <Spinner />
+              }
 
-                if (error.isError) {
-                  return <ErrorHandler errorMessage={error.errorMessage} errorDescription={error.errorDescription} />
-                }
+              if (error.isError) {
+                return <ErrorHandler errorMessage={error.errorMessage} errorDescription={error.errorDescription} />
+              }
 
-                if (!ratedMoviesList) {
-                  return <EmptyQuery errorDescription="Вы еще не оценили ни 1 фильм" />
-                }
+              if (!ratedMoviesList) {
+                return <EmptyQuery errorDescription="Вы еще не оценили ни 1 фильм" />
+              }
 
-                return <ItemList moviesList={ratedMoviesListHandler(ratedMoviesList, ratedPagValue)} />
-              })()}
-            </Online>
-            <Offline>
-              <ErrorHandler errorMessage="Проверьте подключение к сети" errorDescription="Ноу интернет коннектион" />
-            </Offline>
-            <Pagination total={ratedTotal} pagValue={ratedPagValue} setPagValue={setRatedPagValue} />
-          </>
-        )}
-      </MovieAppConsumer>
-    </div>
+              return <ItemList moviesList={ratedMoviesListHandler(ratedMoviesList, ratedPagValue)} />
+            })()}
+          </Online>
+          <Offline>
+            <ErrorHandler errorMessage="Проверьте подключение к сети" errorDescription="Ноу интернет коннектион" />
+          </Offline>
+          <Pagination total={ratedTotal} pagValue={ratedPagValue} setPagValue={setRatedPagValue} />
+        </>
+      )}
+    </MovieAppConsumer>
   )
 }

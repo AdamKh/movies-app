@@ -1,12 +1,21 @@
 .section {
   padding: 0 10px;
-  padding-top: 20px;
-  padding-bottom: 20px;
+  margin-top: 20px;
   margin: 0 auto;
   max-width: 1010px;
   background-color: #fff;
 }
 
-.offline {
-  margin-top: 34px !important;
+.tabs {
+  margin-top: 13px;
+  margin-bottom: 0;
+}
+
+@media screen and (max-width: 768px) {
+  .tabs {
+    margin-top: 0px;
+  }
+  .section {
+    margin-top: 0px;
+  }
 }

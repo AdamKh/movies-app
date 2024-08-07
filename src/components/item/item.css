@@ -16,6 +16,7 @@
 }
 
 .movie_img {
+  display: block;
   flex: 0 0 180px;
   height: 100%;
   background-color: black;
@@ -29,6 +30,7 @@
 
 .movie_text {
   margin-top: 7px !important;
+  overflow: hidden;
 }
 
 .rate_wrapper {
@@ -79,8 +81,45 @@
   border-radius: 2px;
   background: #fafafa;
   color: #585858;
-  padding: 2px 5px;
+  padding: 1px 5px;
   margin-right: 8px;
   margin-top: 7px;
   margin-bottom: 0;
+}
+
+@media screen and (max-width: 768px) {
+  .movie_img {
+    display: flex !important;
+    flex: 0 0 60px;
+    height: 90px;
+    position: absolute;
+    top: 6px;
+    left: 30px;
+  }
+  .item {
+    height: 245px;
+  }
+  .movie_title,
+  .movie_date,
+  .movie_genres {
+    position: relative;
+    left: 70px;
+    width: calc(100% - 70px);
+  }
+
+  .movie_info {
+    padding: 6px 10px;
+  }
+
+  .movie_title {
+    margin: 0;
+  }
+
+  .rate_wrapper {
+    position: absolute;
+    bottom: 20px;
+    right: 30px;
+    border-radius: 5px;
+    background-color: rgba(255, 255, 255, 0.95);
+  }
 }

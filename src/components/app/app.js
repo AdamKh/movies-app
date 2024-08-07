@@ -186,7 +186,7 @@ export default function App() {
           genresList,
         }}
       >
-        <Tabs centered defaultActiveKey="1" items={tabs} destroyInactiveTabPane />
+        <Tabs className="tabs" centered defaultActiveKey="1" items={tabs} destroyInactiveTabPane />
       </MovieAppProvider>
     </div>
   )
