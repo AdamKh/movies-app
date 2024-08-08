@@ -1,44 +1,64 @@
 import '../tab.css'
 
-import { Offline, Online } from 'react-detect-offline'
+import { Offline } from 'react-detect-offline'
 
 import ItemList from '../../item-list'
 import Spinner from '../../spinner'
 import ErrorHandler from '../../error/error-handler'
-import EmptyQuery from '../../error/empty-query'
 import SearchBar from '../../searchbar'
 import Pagination from '../../pagination'
-import { MovieAppConsumer } from '../../movies-app-service-context'
 
-export default function SearchTab() {
+export default function SearchTab({
+  moviesList,
+  setQuery,
+  isLoaded,
+  error,
+  searchPagValue,
+  setSearchPagValue,
+  searchTotal,
+  guestSessionId,
+  ratedMoviesList,
+  setRatedMoviesList,
+}) {
   return (
-    <MovieAppConsumer>
-      {({ moviesList, setQuery, isLoaded, error, searchPagValue, setSearchPagValue, searchTotal }) => (
-        <>
-          <SearchBar setQuery={setQuery} />
-          <Online>
-            {(() => {
-              if (!isLoaded) {
-                return <Spinner />
-              }
+    <>
+      <SearchBar setQuery={setQuery} />
+      {(() => {
+        if (!isLoaded) {
+          return <Spinner />
+        }
 
-              if (error.isError) {
-                return <ErrorHandler errorMessage={error.errorMessage} errorDescription={error.errorDescription} />
-              }
+        if (error.isError) {
+          return (
+            <ErrorHandler
+              errorMessage={error.errorMessage}
+              errorDescription={`${error.errorDescription}. Maybe you need to enable VPN ZenMate`}
+            />
+          )
+        }
 
-              if (moviesList.length === 0) {
-                return <EmptyQuery errorDescription="Фильмы с таким названием не найдены" />
-              }
+        if (moviesList.length === 0) {
+          return <ErrorHandler errorDescription="Фильмы с таким названием не найдены" />
+        }
 
-              return <ItemList moviesList={moviesList} />
-            })()}
-          </Online>
-          <Offline>
-            <ErrorHandler errorMessage="Проверьте подключение к сети" errorDescription="Ноу интернет коннектион" />
-          </Offline>
-          <Pagination total={searchTotal} pagValue={searchPagValue} setPagValue={setSearchPagValue} />
-        </>
-      )}
-    </MovieAppConsumer>
+        return (
+          <ItemList
+            moviesList={moviesList}
+            guestSessionId={guestSessionId}
+            ratedMoviesList={ratedMoviesList}
+            setRatedMoviesList={setRatedMoviesList}
+          />
+        )
+      })()}
+      <Offline>
+        <ErrorHandler errorMessage="Проверьте подключение к сети" errorDescription="Ноу интернет коннектион" />
+      </Offline>
+      <Pagination
+        total={searchTotal}
+        pagValue={searchPagValue}
+        setPagValue={setSearchPagValue}
+        ratedMoviesList={ratedMoviesList}
+      />
+    </>
   )
 }

@@ -1,0 +1,17 @@
+.movie_genres {
+  flex-wrap: wrap;
+}
+
+.genre {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid #d9d9d9;
+  border-radius: 2px;
+  background: #fafafa;
+  color: #585858;
+  padding: 1px 5px;
+  margin-right: 8px;
+  margin-top: 7px;
+  margin-bottom: 0;
+}

@@ -7,36 +7,10 @@ import SearchTab from '../tabs/search-tab'
 import RatedTab from '../tabs/rated-tab'
 import MoviesService from '../../services/movies-services'
 import { MovieAppProvider } from '../movies-app-service-context'
+import { tabs as setTabs } from '../../constants'
+import { shortenText } from '../../utils'
 
 const movieService = new MoviesService()
-
-const tabs = [
-  {
-    key: '1',
-    label: 'Search',
-    children: <SearchTab />,
-  },
-  {
-    key: '2',
-    label: 'Rated',
-    children: <RatedTab />,
-  },
-]
-
-function shortenText(text, maxLength) {
-  if (text.length <= maxLength) {
-    return text
-  }
-
-  const shortened = text.slice(0, maxLength)
-  const lastSpaceIndex = shortened.lastIndexOf(' ')
-
-  if (lastSpaceIndex === -1) {
-    return `${shortened}...`
-  }
-
-  return `${shortened.slice(0, lastSpaceIndex)}...`
-}
 
 export default function App() {
   const [moviesList, setMoviesList] = useState([])
@@ -54,6 +28,31 @@ export default function App() {
   const [ratedTotal, setRatedTotal] = useState(0)
   const [ratingsLoaded, setRatingsLoaded] = useState(false)
   const [genresList, setGenresList] = useState([])
+
+  const tabs = setTabs(
+    <SearchTab
+      moviesList={moviesList}
+      setQuery={setQuery}
+      isLoaded={isLoaded}
+      error={error}
+      searchPagValue={searchPagValue}
+      setSearchPagValue={setSearchPagValue}
+      searchTotal={searchTotal}
+      guestSessionId={localStorage.getItem('guest_session_id')}
+      ratedMoviesList={ratedMoviesList}
+      setRatedMoviesList={setRatedMoviesList}
+    />,
+    <RatedTab
+      isLoaded={isLoaded}
+      error={error}
+      ratedPagValue={ratedPagValue}
+      setRatedPagValue={setRatedPagValue}
+      ratedTotal={ratedTotal}
+      guestSessionId={localStorage.getItem('guest_session_id')}
+      ratedMoviesList={ratedMoviesList}
+      setRatedMoviesList={setRatedMoviesList}
+    />
+  )
 
   // Загружает оцененные фильмы и жанры
   const loadRatedMovies = (guestSessionId) => {
@@ -85,20 +84,34 @@ export default function App() {
         setRatingsLoaded(true)
       })
 
-    movieService.getGenres().then((genres) => {
-      setGenresList(genres)
-    })
+    movieService
+      .getGenres()
+      .then((genres) => {
+        setGenresList(genres)
+      })
+      .catch(() => {
+        setGenresList([])
+      })
   }
 
   // Создание guest_session_id при необходимости и получение списка оценненных фильмов
   useEffect(() => {
     const guestSessionId = localStorage.getItem('guest_session_id')
     if (!guestSessionId) {
-      movieService.createSessionId().then((res) => {
-        const { guest_session_id: newGuestSessionId } = res
-        localStorage.setItem('guest_session_id', newGuestSessionId)
-        loadRatedMovies(newGuestSessionId)
-      })
+      movieService
+        .createSessionId()
+        .then((res) => {
+          const { guest_session_id: newGuestSessionId } = res
+          localStorage.setItem('guest_session_id', newGuestSessionId)
+          loadRatedMovies(newGuestSessionId)
+        })
+        .catch((err) => {
+          setError({
+            isError: true,
+            errorMessage: err.name,
+            errorDescription: `${err.message} - ошибка авторизации гостевой сессии`,
+          })
+        })
     } else {
       loadRatedMovies(guestSessionId)
     }
@@ -166,23 +179,7 @@ export default function App() {
     <div className="section">
       <MovieAppProvider
         value={{
-          movieService,
-          guestSessionId: localStorage.getItem('guest_session_id'),
-          moviesList,
-          setMoviesList,
-          isLoaded,
-          error,
-          setError,
-          query,
-          setQuery,
-          ratedMoviesList,
-          setRatedMoviesList,
-          searchPagValue,
-          setSearchPagValue,
-          searchTotal,
-          ratedPagValue,
-          setRatedPagValue,
-          ratedTotal,
+          postRating: movieService.postRating.bind(movieService),
           genresList,
         }}
       >
