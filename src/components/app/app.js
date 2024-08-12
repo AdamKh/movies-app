@@ -173,7 +173,7 @@ export default function App() {
       })
       setLoaded(true)
     }
-  }, [ratedMoviesList, moviesList, searchPagValue, ratingsLoaded])
+  }, [ratedMoviesList, moviesList, ratingsLoaded])
 
   return (
     <div className="section">
